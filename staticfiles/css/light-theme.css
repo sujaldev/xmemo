@@ -1,0 +1,16 @@
+:root {
+	--page-background: white;
+
+
+	--nav-color: #24292E;
+	--title-color: #6CEBB6;
+
+	--footer-background: #F6F8FA;
+	--footer-color: #626971;
+
+	--ham-menu-background: #F6F8FA;
+	--ham-menu-border: var(--ham-menu-background);
+	--ham-menu-color: #009DF8;
+	--ham-menu-selected-border: #6CEBB6;
+	--ham-menu-selected-color: #E74C3C;
+}
