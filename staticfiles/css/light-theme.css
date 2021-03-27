@@ -13,4 +13,11 @@
 	--ham-menu-color: #009DF8;
 	--ham-menu-selected-border: #6CEBB6;
 	--ham-menu-selected-color: #E74C3C;
+
+	--main-border: #E1E4E8;
+	--heading-color: #24292e;
+	--text-color: #24292e;
+	--button-background: #fafbfc;
+	--button-color: #24292e;
+	--search-background: var(--page--background);
 }

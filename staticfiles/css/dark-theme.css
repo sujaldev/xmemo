@@ -1,5 +1,5 @@
 :root {
-	--page-background: #222;
+	--page-background: #0D1117;
 
 
 	--nav-color: #24292E;
@@ -13,4 +13,11 @@
 	--ham-menu-color: #009DF8;
 	--ham-menu-selected-border: #6CEBB6;
 	--ham-menu-selected-color: #E74C3C;
+
+	--main-border: #30363D;
+	--heading-color: #c9d1d9;
+	--text-color: #c9d1d9;
+	--button-background: #30363D;
+	--button-color: #fafbfc;
+	--search-background: var(--page--background);
 }

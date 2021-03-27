@@ -8,7 +8,7 @@
 	<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
 	<link class="mode" rel="stylesheet" type="text/css" href="{% static 'css/light-theme.css' %}">
 	<style type="text/css">
-		@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap');
+		@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,500;0,600;1,700&display=swap');
 		@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap');
 
 		html {
@@ -127,7 +127,7 @@
 			padding: 50px 0 50px 0;
 			height: 120px;
 			width: 100%;
-			margin-top: 90vh;
+			margin-top: 10vh;
 			font-family: 'Roboto Mono', monospace;
 			font-weight: 500;
 			color: var(--footer-color);
@@ -142,7 +142,183 @@
 
 		.noselect {
 			user-select: none;
-		}</style>
+		}
+
+		.main-container{
+			position: relative;
+			left: 5%;
+			width: 90%;
+			min-height: 100vh;
+			background: var(--page-background);
+			border: 1px solid var(--main-border);
+			border-radius: 6px;
+			margin: 50px 0 15px 0;
+			padding-bottom: 100px;
+		}
+
+
+		.sub-container{
+			position: relative;
+			left: 5%;
+			width: 90%;
+			height: auto;
+			background: var(--page-background);
+			border: 1px solid var(--main-border);
+			border-radius: 6px;
+			margin: 100px 0 15px 0;
+			padding-bottom: 100px;
+		}
+
+		.heading {
+			position: relative;
+			top: 50px;
+			left: 5%;
+			width: 90%;
+			padding: 30px;
+		}
+
+		.heading p{
+			font-size: 25px;
+			font-weight: 700;
+			color: var(--heading-color);
+		}
+
+		.heading div{
+			position: relative;
+			margin-top: 15px;
+			top: 100%;
+			left: 0%;
+			width: 100%;
+			height: 2px;
+			background: var(--main-border);
+		}
+
+		.sub-heading {
+			position: relative;
+			top: 50px;
+			left: 10%;
+			width: 80%;
+			padding: 30px;
+		}
+
+		.sub-heading p{
+			font-size: 20px;
+			font-weight: 600;
+			color: var(--heading-color);
+		}
+
+		.sub-heading div{
+			position: relative;
+			margin-top: 15px;
+			top: 100%;
+			left: 0%;
+			width: 100%;
+			height: 2px;
+			background: var(--main-border);
+		}
+
+		.main-text {
+			position: relative;
+			top: 40px;
+			left: 5%;
+			width: 90%;
+			padding: 10px 30px 10px 30px;
+			font-weight: 300;
+			font-size: 15px;
+			color: var(--text-color);
+		}
+
+		.main-text bold{
+			font-weight: 500;
+		}
+
+		.sub-text {
+			position: relative;
+			top: 40px;
+			left: 10%;
+			width: 80%;
+			padding: 10px 30px 10px 30px;
+			font-weight: 300;
+			font-size: 14px;
+			color: var(--text-color);
+		}
+
+		.sub-text bold{
+			font-weight: 500;
+		}
+
+		.inline-btn{
+			-webkit-tap-highlight-color: transparent;
+			user-select: none;
+			display: inline-block;
+			position: relative;
+			margin: 0 10px 0 10px;
+			padding: 10px 20px 10px 20px;
+			background: var(--button-background);
+			border: 1px solid var(--main-border);
+			border-radius: 5px;
+			cursor: pointer;
+			transition: 0.1s ease;
+			text-decoration: none;
+			color: var(--button-color);
+			font-weight: 500;
+			font-size: 15px;
+		}
+
+		.inline-btn:active{
+			background: var(--ham-menu-selected-border);
+			color: white;
+		}
+
+
+		.btn{
+			-webkit-tap-highlight-color: transparent;
+			user-select: none;
+			display: table;
+			position: relative;
+			padding: 10px 20px 10px 20px;
+			background: var(--button-background);
+			border: 1px solid var(--main-border);
+			border-radius: 5px;
+			cursor: pointer;
+			transition: 0.1s ease;
+			text-decoration: none;
+			color: var(--button-color);
+			font-weight: 500;
+			font-size: 15px;
+			margin: 20px 10px 20px 10px;
+		}
+
+
+		.input{
+			padding: 20px;
+			position: relative;
+			left: 5%;
+			min-width: 40%;
+			height: 30px;
+			border: 1px solid var(--main-border);
+			outline: none;
+			margin-top: 5%;
+			font-weight: 300;
+			font-size: 15px;
+			color: var(--text-color);
+			background: var(--search-background);
+		}
+
+
+		.search{
+			display: inline-flex;
+			align-items: stretch;
+			align-content: flex-start;
+			max-width: 80%;
+		}
+
+
+		.search input{
+			margin: 0;
+		}
+
+	</style>
 	<style type="text/css">
 		{% block style %}
 		replace me
@@ -388,7 +564,7 @@
 			</div>
 		</div></header>
 
-	<main style="min-height: 0px;">
+	<main class="main-container" style="min-height: 0px;">
 		{% block content %}
 		replace me
 		{% endblock content %}
@@ -407,17 +583,19 @@
 		ham = document.getElementsByClassName('ham-menu')[0]
 		open_btn = document.getElementsByClassName('logo')[0]
 		close_btn = document.getElementsByClassName('sub close-ham')[0]
-		title_btn = document.getElementsByClassName('title')[0]
+		change_theme_btn = document.getElementById('theme-changer')
 		mode = document.getElementsByClassName('mode')[0]
 
 
-		title_btn.onclick = function(){
+		change_theme_btn.onclick = function(){
 			if (mode.getAttribute('href') == "/static/css/light-theme.css"){
 				mode.setAttribute('href', "/static/css/dark-theme.css")
 				document.getElementsByClassName("githublogo")[0].setAttribute("fill", "white")
+				document.getElementsByClassName("githublogo")[1].setAttribute("fill", "white")
 			} else {
 				mode.setAttribute('href', "/static/css/light-theme.css")
 				document.getElementsByClassName("githublogo")[0].setAttribute("fill", "black")
+				document.getElementsByClassName("githublogo")[1].setAttribute("fill", "black")
 			}
 		}
 
