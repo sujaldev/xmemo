@@ -154,6 +154,7 @@
 		<div class="navbar">
 			<p class="title noselect">XMEMO</p>
 			<div class="logo noselect">
+				{% block sub_logo %}
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40px" x="0px" y="0px"
 						 viewBox="0 0 144 144" style="enable-background:new 0 0 144 144;" xml:space="preserve">
 					<style type="text/css">
@@ -213,7 +214,9 @@
 						<g>
 						</g>
 					</g>
-					</svg></div>
+					</svg>
+				{% endblock %}
+			</div>
 		</div>
 		<div class="ham-menu">
 			<div class="sub cs selected-subject">
