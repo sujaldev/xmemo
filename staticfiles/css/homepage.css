@@ -13,6 +13,7 @@ html {
 	padding: 0;
 	box-sizing: border-box;
 	font-family: 'Roboto Mono', monospace;
+	-webkit-tap-highlight-color: transparent;
 }
 
 
@@ -54,24 +55,6 @@ html {
 	margin-right: 5%;
 	cursor: pointer;
 }
-
-.footer{
-	display: flex;
-	flex-wrap: nowrap;
-	justify-content: center;
-	align-items: center;
-
-
-	position: absolute;
-	height: 90px;
-	width: 100%;
-	margin-top: 90vh;
-	font-family: 'Roboto Mono', monospace;
-	font-weight: 500;
-	color: var(--footer-color);
-	background: var(--footer-background);
-}
-
 
 .ham-menu{
 	display: none;
@@ -128,3 +111,34 @@ html {
 .close-ham{
 	cursor: pointer;
 }
+
+
+.footer{
+	display: flex;
+	flex-wrap: nowrap;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+
+	position: absolute;
+	padding: 50px 0 50px 0;
+	height: 120px;
+	width: 100%;
+	margin-top: 90vh;
+	font-family: 'Roboto Mono', monospace;
+	font-weight: 500;
+	color: var(--footer-color);
+	background: var(--footer-background);
+}
+
+
+.contrib{
+	padding-top:20px;
+}
+
+
+.noselect {
+	user-select: none;
+}
+

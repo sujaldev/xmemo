@@ -8,8 +8,10 @@ mode = document.getElementsByClassName('mode')[0]
 title_btn.onclick = function(){
 	if (mode.getAttribute('href') == "/static/css/light-theme.css"){
 		mode.setAttribute('href', "/static/css/dark-theme.css")
+		document.getElementsByClassName("githublogo")[0].setAttribute("fill", "white")
 	} else {
 		mode.setAttribute('href', "/static/css/light-theme.css")
+		document.getElementsByClassName("githublogo")[0].setAttribute("fill", "black")
 	}
 }
 

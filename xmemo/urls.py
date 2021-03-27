@@ -18,8 +18,16 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from cs.views import home_view
+from physics.views import phy_view
+from chemistry.views import chem_view
+from mathematics.views import math_view
+from english.views import eng_view
 
 urlpatterns = [
     path('', home_view, name="home"),
+    path('physics/', phy_view, name="physics"),
+    path('chemistry/', chem_view, name="chemistry"),
+    path('mathematics/', math_view, name="mathematics"),
+    path('english/', eng_view, name="english"),
     path('admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
