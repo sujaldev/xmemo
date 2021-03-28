@@ -25,28 +25,31 @@ def display_by_date(request):
 def is_valid_date(date):
     validity = False
     params = date.split(" ")
-    if len(params) == 3:
-        if not 1 <= int(params[0]) <= 31:
-            return validity
-        elif not params[1].lower() in [
-            'january',
-            'february',
-            'march',
-            'april',
-            'may',
-            'june',
-            'july',
-            'august',
-            'september',
-            'october',
-            'november',
-            'december'
-        ]:
-            return validity
-        elif not params[2] in ["2020", "2021"]:
-            return validity
+    try:
+        if len(params) == 3:
+            if not 1 <= int(params[0]) <= 31:
+                return validity
+            elif not params[1].lower() in [
+                'january',
+                'february',
+                'march',
+                'april',
+                'may',
+                'june',
+                'july',
+                'august',
+                'september',
+                'october',
+                'november',
+                'december'
+            ]:
+                return validity
+            elif not params[2] in ["2020", "2021"]:
+                return validity
+            else:
+                validity = True
+                return validity
         else:
-            validity = True
             return validity
-    else:
+    except TypeError:
         return validity
