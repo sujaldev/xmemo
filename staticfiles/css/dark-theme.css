@@ -20,4 +20,11 @@
 	--button-background: #30363D;
 	--button-color: #fafbfc;
 	--search-background: var(--page--background);
+    --table-entry: #F1F8FF;
+	--table-entry-border: #e1e4e8;
+
+	--code-block-background: #2E303A;
+	--major-line-break: white;
+	--minor-line-break: var(--main-border);
+	--wrong-button-hover: #d73a49;
 }

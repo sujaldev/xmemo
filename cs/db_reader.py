@@ -2,7 +2,7 @@ import os
 from xmemo import settings
 from json import load
 
-db_path = os.path.join(settings.STATIC_ROOT, 'db/by-date/')
+db_path = os.path.join(settings.STATIC_ROOT, 'db')
 
 
 class Question:
@@ -59,8 +59,8 @@ class Answer:
     <span class="right inline-btn">Correct</span>
     <span class="wrong inline-btn">Incorrect</span>
 </div>
-<p class="main-text">{self.struct["correct_val"]} found this answer to be correct<br><br>
-{self.struct["wrong_val"]} found this answer to be incorrect.
+<p class="main-text" style="color: green;">{self.struct["correct_val"]} found this answer to be correct</p>
+<p class="main-text" style="color: red;">{self.struct["wrong_val"]} found this answer to be incorrect.</p>
 <div class="minor-line-break"></div>"""
         return html
 
@@ -73,8 +73,35 @@ def read_tree(json_file):
 
 
 def read_json(file_name, db=db_path):
-    path = f"{db}{file_name}.json"
+    path = f"{db}/by-date/{file_name}.json"
     with open(path) as json_file:
         json = load(json_file)
         html = read_tree(json)
     return html
+
+
+def contains(keyword, question):
+    key = keyword.lower()
+    ques = question.lower()
+    if key in ques:
+        return True
+    else:
+        return False
+
+
+def read_by_keyword(keyword, db=db_path):
+    key_path = f"{db}/by-keyword/keywords.json"
+    date_path = f"{db}/by-date/"
+    question_list = []
+    with open(key_path) as json_file:
+        key_db = load(json_file)
+
+    for key, value in key_db.items():
+        if contains(keyword, key):
+            with open(f"{date_path}{value[:-2]}.json") as json_file:
+                question_list.append(load(json_file)[int(value[-1])])
+
+    if not question_list:
+        raise ValueError
+
+    return read_tree(question_list)

@@ -19,7 +19,17 @@ def display_by_date(request):
             }
         return render(request, "questions_base.html", html)
     else:
-        return HttpResponse(f"<p> {query} is not a valid date, try again </p>")
+        return HttpResponse(f'<p class="main-text"> {query} is not a valid date, try again </p>')
+
+
+def display_by_key(request):
+    query = request.GET.get('q', '')
+    try:
+        html = {"html_string": db_reader.read_by_keyword(query)}
+    except ValueError:
+        html = {"html_string": f"<p class='main-text'> {query}:  no such question in records. Please try again. </p>"}
+
+    return render(request, "questions_base.html", html)
 
 
 def is_valid_date(date):
