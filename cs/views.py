@@ -51,5 +51,5 @@ def is_valid_date(date):
                 return validity
         else:
             return validity
-    except TypeError:
+    except (TypeError, ValueError):
         return validity
