@@ -5,6 +5,7 @@ from datetime import date
 from xmemo import settings
 from dotenv import load_dotenv
 from ..xmemo_bot_lib.match_funcs import *
+from ..views import is_valid_date
 
 db_path = os.path.join(settings.STATIC_ROOT, 'db')
 
@@ -38,45 +39,32 @@ class XmemoBot:
         if len(message_list) > 0:  # best case scenario
             return message_list
         else:  # in case server responds with an empty list try again one time with long polling
-            new_url = f"{self.base_url}/getUpdates?timeout=10&offset=10"
+            new_url = f"{self.base_url}/getUpdates?timeout=100&offset=10"
             new_list = json.loads(requests.get(new_url).content)['result']
 
-            # if request was successful this time return list else report error
+            # in case still no new messages keep trying again
             if len(new_list) > 0:
-                if self.reported_error:
-                    self.fixed_error = True
-                    self.report_error()
                 return new_list
             else:
-                if not self.reported_error:
-                    self.reported_error = True
-                    self.fixed_error = False
-                    self.report_error("Message list is empty, please send a message to fix.")
-                return self.get_msg_list()
+                return self.get_last_msg()
 
-    def get_last_msg(self, offset, timeout=2):
+    def get_last_msg(self, offset, timeout=100):
         url = f"{self.base_url}/getUpdates?timeout={timeout}&offset={offset+1}"
         r = requests.get(url)
-        message_list = []
 
         if r.status_code == 200:
             message_list = json.loads(r.content)["result"]
+        else:
+            return self.get_last_msg()
 
         if len(message_list) > 0:
             return message_list
         else:
-            new_list = self.get_last_msg(offset, 10)
+            new_list = self.get_last_msg(offset, 200)
             if len(new_list) > 0:
-                if self.reported_error:
-                    self.fixed_error = True
-                    self.report_error()
                 return new_list
             else:
-                if not self.reported_error:
-                    self.reported_error = True
-                    self.fixed_error = False
-                    self.report_error("Message list is empty, please send a message to fix.")
-                return self.get_last_msg(offset, 10)
+                return self.get_last_msg(offset, 300)
 
     def send_msg(self, text, chat_id):
         url = f"{self.base_url}/sendMessage?text={text}&chat_id={chat_id}"
@@ -139,10 +127,11 @@ class XmemoBot:
                 # Display gathered information till now
                 self.send_msg(f"\"{question_key}\" is selected now.", chat_id)
                 self.send_msg(f"{author} is the author.", chat_id)
-                self.send_msg(f"Please enter the answer now: ", chat_id)
+                self.send_msg(f"Please enter your answer now: ", chat_id)
 
                 # get the answer
                 answer = self.get_last_msg(offset)[-1]["message"]["text"]
+                offset += 1
 
                 # update the answer struct
                 answer_struct["answer"] = answer
@@ -153,13 +142,73 @@ class XmemoBot:
                     existing_db[list_pos]["answers"].append(answer_struct)
 
                 with open(f"{db_path}/by-date/{file}.json", "w") as old_db:
-                    json.dump(existing_db, old_db)
+                    json.dump(existing_db, old_db, indent=2, sort_keys=True)
+                print(True)
+
+                self.send_msg("Database updated successfully.", chat_id)
+
+                return
+
+        self.send_msg("On which date was this question assigned? Use this format (6 september 2020)", chat_id)
+        question_date = self.get_last_msg(offset)[-1]["message"]["text"]
+        offset += 1
+
+        self.send_msg("Please enter your answer now: ", chat_id)
+        answer = self.get_last_msg(offset)[-1]["message"]["text"]
+
+        file_path = f"{db_path}/by-date/{question_date}.json"
+        key_db_path = f"{db_path}/by-keyword/keywords.json"
+
+        answer_struct["answer"] = answer
+
+        question_struct = {
+            "question": question,
+            "answers": [
+                answer_struct
+            ]
+        }
+
+        print(is_valid_date(question_date))
+        print(file_path)
+        print(os.path.exists(file_path))
+
+        if is_valid_date(question_date):
+            if os.path.exists(file_path):
+                print("true")
+                with open(file_path) as existing_db_file:
+                    existing_db = json.load(existing_db_file)
+                existing_db.append(question_struct)
+                question_index = len(existing_db) - 1
+                with open(file_path, "w") as old_db:
+                    json.dump(existing_db, old_db, indent=2, sort_keys=True)
+                with open(key_db_path) as old_key_db_file:
+                    old_key_db = json.load(old_key_db_file)
+                old_key_db[question] = f"{question_date} {question_index}"
+                with open(key_db_path, "w+") as old_key_db_file:
+                    json.dump(old_key_db, old_key_db_file, indent=2, sort_keys=True)
+
+                self.send_msg("Database updated successfully.", chat_id)
+
+            else:
+                with open(file_path, "w+") as new_db_file:
+                    json.dump([question_struct], new_db_file, indent=2, sort_keys=True)
+
+                with open(key_db_path) as old_key_db_file:
+                    old_key_db = json.load(old_key_db_file)
+
+                old_key_db[question] = f"{question_date} 0"
+
+                with open(key_db_path, "w+") as old_key_db_file:
+                    json.dump(old_key_db, old_key_db_file, indent=2, sort_keys=True)
+
+                self.send_msg("Database updated successfully.", chat_id)
+
+        else:
+            self.send_msg("This is not a valid date... Please try again.", chat_id)
 
     def handle_response(self, text, chat_id):
         if match(text, "add question"):
             self.add_question(chat_id)
-        else:
-            self.send_msg("I do not understand, please try again.", chat_id)
 
     def report_error(self, error_msg="Fixed Error"):
         if self.reported_error:
