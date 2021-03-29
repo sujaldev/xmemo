@@ -38,15 +38,15 @@ class XmemoBot:
         # update-object length check
         if len(message_list) > 0:  # best case scenario
             return message_list
-        else:  # in case server responds with an empty list try again one time with long polling
-            new_url = f"{self.base_url}/getUpdates?timeout=100&offset=10"
-            new_list = json.loads(requests.get(new_url).content)['result']
+        else:  # in case server responds with an empty list try again one time
+            new_url = f"{self.base_url}/getUpdates"
+            new_list = json.loads(requests.get(new_url).content)
 
             # in case still no new messages keep trying again
             if len(new_list) > 0:
                 return new_list
             else:
-                return self.get_last_msg()
+                return self.get_msg_list()
 
     def get_last_msg(self, offset, timeout=100):
         url = f"{self.base_url}/getUpdates?timeout={timeout}&offset={offset+1}"
@@ -55,7 +55,7 @@ class XmemoBot:
         if r.status_code == 200:
             message_list = json.loads(r.content)["result"]
         else:
-            return self.get_last_msg()
+            return self.get_last_msg(offset, 200)
 
         if len(message_list) > 0:
             return message_list

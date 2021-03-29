@@ -3,9 +3,12 @@ from .xmemo_bot import XmemoBot
 
 xmemo = XmemoBot()
 
-msg_list = xmemo.get_msg_list()
-print(msg_list)
-last_offset = msg_list[-1]["update_id"] - 2
+try:
+    msg_list = xmemo.get_msg_list()
+    print(msg_list)
+    last_offset = msg_list[-1]["update_id"] - 2
+except Exception:
+    pass
 
 while True:
     try:
