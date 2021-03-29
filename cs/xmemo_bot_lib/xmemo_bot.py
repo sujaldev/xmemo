@@ -190,6 +190,7 @@ class XmemoBot:
                 self.send_msg("Database updated successfully.", chat_id)
 
             else:
+                print("test")
                 with open(file_path, "w+") as new_db_file:
                     json.dump([question_struct], new_db_file, indent=2, sort_keys=True)
 
