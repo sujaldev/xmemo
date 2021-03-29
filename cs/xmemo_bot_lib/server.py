@@ -14,5 +14,5 @@ while True:
         msg_txt = msg[-1]["message"]["text"]
         chat_id = msg[-1]["message"]["chat"]["id"]
         xmemo.handle_response(msg_txt, chat_id)
-    except Exception():
+    except Exception:
         pass
