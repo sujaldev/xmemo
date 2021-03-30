@@ -72,10 +72,10 @@ def read_tree(json_file):
     return html
 
 
-def read_json(file_name, db=db_path):
-    path = f"{db}/by-date/{file_name}.json"
+def read_json(date, db=db_path):
+    path = f"{db}/by-date/questions.json"
     with open(path) as json_file:
-        json = load(json_file)
+        json = load(json_file)[date]
         html = read_tree(json)
     return html
 

@@ -40,7 +40,7 @@ class XmemoBot:
             return message_list
         else:  # in case server responds with an empty list try again one time
             new_url = f"{self.base_url}/getUpdates"
-            new_list = json.loads(requests.get(new_url).content)
+            new_list = json.loads(requests.get(new_url).content)["result"]
 
             # in case still no new messages keep trying again
             if len(new_list) > 0:
@@ -137,11 +137,11 @@ class XmemoBot:
                 answer_struct["answer"] = answer
 
                 # open the database and update it
-                with open(f"{db_path}/by-date/{file}.json") as existing_db_file:
+                with open(f"{db_path}/by-date/questions.json") as existing_db_file:
                     existing_db = json.load(existing_db_file)
-                    existing_db[list_pos]["answers"].append(answer_struct)
+                    existing_db[file][list_pos]["answers"].append(answer_struct)
 
-                with open(f"{db_path}/by-date/{file}.json", "w") as old_db:
+                with open(f"{db_path}/by-date/questions.json", "w") as old_db:
                     json.dump(existing_db, old_db, indent=2, sort_keys=True)
                 print(True)
 
@@ -156,7 +156,7 @@ class XmemoBot:
         self.send_msg("Please enter your answer now: ", chat_id)
         answer = self.get_last_msg(offset)[-1]["message"]["text"]
 
-        file_path = f"{db_path}/by-date/{question_date}.json"
+        file_path = f"{db_path}/by-date/questions.json"
         key_db_path = f"{db_path}/by-keyword/keywords.json"
 
         answer_struct["answer"] = answer
@@ -168,42 +168,24 @@ class XmemoBot:
             ]
         }
 
-        print(is_valid_date(question_date))
-        print(file_path)
-        print(os.path.exists(file_path))
-
         if is_valid_date(question_date):
-            if os.path.exists(file_path):
-                print("true")
-                with open(file_path) as existing_db_file:
-                    existing_db = json.load(existing_db_file)
-                existing_db.append(question_struct)
-                question_index = len(existing_db) - 1
-                with open(file_path, "w") as old_db:
-                    json.dump(existing_db, old_db, indent=2, sort_keys=True)
-                with open(key_db_path) as old_key_db_file:
-                    old_key_db = json.load(old_key_db_file)
-                old_key_db[question] = f"{question_date} {question_index}"
-                with open(key_db_path, "w+") as old_key_db_file:
-                    json.dump(old_key_db, old_key_db_file, indent=2, sort_keys=True)
+            with open(file_path) as existing_db_file:
+                existing_db = json.load(existing_db_file)
+            # if question_date not in existing_db.keys():
+            #     existing_db[question_date] = []
+            if question not in existing_db.keys():
+                existing_db[question_date] = []
+            existing_db[question_date].append(question_struct)
+            question_index = len(existing_db) - 1
+            with open(file_path, "w") as old_db:
+                json.dump(existing_db, old_db, indent=2, sort_keys=True)
+            with open(key_db_path) as old_key_db_file:
+                old_key_db = json.load(old_key_db_file)
+            old_key_db[question] = f"{question_date} {question_index}"
+            with open(key_db_path, "w+") as old_key_db_file:
+                json.dump(old_key_db, old_key_db_file, indent=2, sort_keys=True)
 
-                self.send_msg("Database updated successfully.", chat_id)
-
-            else:
-                print("test")
-                with open(file_path, "w+") as new_db_file:
-                    json.dump([question_struct], new_db_file, indent=2, sort_keys=True)
-
-                with open(key_db_path) as old_key_db_file:
-                    old_key_db = json.load(old_key_db_file)
-
-                old_key_db[question] = f"{question_date} 0"
-
-                with open(key_db_path, "w+") as old_key_db_file:
-                    json.dump(old_key_db, old_key_db_file, indent=2, sort_keys=True)
-
-                self.send_msg("Database updated successfully.", chat_id)
-
+            self.send_msg("Database updated successfully.", chat_id)
         else:
             self.send_msg("This is not a valid date... Please try again.", chat_id)
 
