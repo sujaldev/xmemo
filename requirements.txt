@@ -3,3 +3,4 @@ django-heroku
 gunicorn
 python-dotenv
 requests
+dj_database_url
