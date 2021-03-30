@@ -11,24 +11,20 @@ def home_view(request):
 def display_by_date(request):
     query = request.GET.get('q', '')
     if is_valid_date(query):
-        try:
-            html = {"html_string": db_reader.read_json(query)}
-        except FileNotFoundError:
-            html = {
-                "html_string": '<p class="main-text" style="margin-bottom: 80vh;">No record for given date exists</p>'
-            }
+        html = {"html_string": db_reader.get_html_by_date(query)}
         return render(request, "questions_base.html", html)
     else:
-        return HttpResponse(f'<p class="main-text"> {query} is not a valid date, try again </p>')
+        html = {
+            "html_string": f'<p class="main-text"> {query} is not a valid date, try again </p>'
+        }
+        return render(request, "questions_base.html", html)
 
 
 def display_by_key(request):
     query = request.GET.get('q', '')
-    try:
-        html = {"html_string": db_reader.read_by_keyword(query)}
-    except ValueError:
-        html = {"html_string": f"<p class='main-text'> {query}:  no such question in records. Please try again. </p>"}
-
+    html = {
+        "html_string": db_reader.get_html_by_key(query)
+    }
     return render(request, "questions_base.html", html)
 
 

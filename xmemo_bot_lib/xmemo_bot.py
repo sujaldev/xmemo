@@ -1,15 +1,14 @@
 import os
 import json
+import django
 import requests
 from datetime import date
-from xmemo import settings
+from .match_funcs import *
 from dotenv import load_dotenv
-from ..xmemo_bot_lib.match_funcs import *
-from ..views import is_valid_date
-from ..models import Question
-
-
-db_path = os.path.join(settings.STATIC_ROOT, 'db')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'xmemo.settings')
+django.setup()
+from cs.models import Question
+from cs.views import is_valid_date
 
 
 def get_date():
@@ -22,10 +21,6 @@ class XmemoBot:
     token = os.environ.get("bot_api_token")  # bot token
     private_token = os.environ.get("private_token")
     base_url = f"https://api.telegram.org/bot{token}"
-
-    def __init__(self):
-        self.reported_error = False
-        self.fixed_error = True
 
     def get_msg_list(self):
         url = f"{self.base_url}/getUpdates"
@@ -96,31 +91,61 @@ class XmemoBot:
         offset += 1  # increment offset to receive further replies
 
         # get a list of all similar questions from the database
-        similar_questions = [
-            model for model in Question.objects.all() if are_similar(question, model.question)
-        ]
+        similar_questions = []
+
+        exact_match = False
+
+        for model in Question.objects.all():
+            if model.question.lower() == question:
+                self.send_msg(
+                    "This question already exists in, adding to existing question.",
+                    chat_id
+                )
+                similar_questions = [model]
+                exact_match = True
+            elif are_similar(question, model.question):
+                similar_questions.append(model)
 
         if len(similar_questions) > 0:
             # QUERY 2 (CONDITIONAL)
-            self.send_msg(
-                "Check if any of these are the same as your question and are just written differently? "
-                "If yes just type the number written before the number, or just say no.",
-                chat_id
-            )
+            if not exact_match:
+                self.send_msg(
+                    "Check if any of these are the same as your question and are just written differently? "
+                    "If yes just type the number written before the number, or just say no.",
+                    chat_id
+                )
 
-            response: str = self.get_last_msg(offset)[-1]["message"]["text"]
-            offset += 1
+                i = 0
+                for each_question in similar_questions:
+                    self.send_msg(f"{i}: {each_question.question}", chat_id)
+                    i += 1
+
+                response: str = self.get_last_msg(offset)[-1]["message"]["text"]
+                offset += 1
+            else:
+                response: str = "0"
 
             # User responded with a number hence adding to an existing question
             if response.isnumeric():
+
+                self.send_msg(
+                    "Please give your answer now: ",
+                    chat_id
+                )
+
                 answer = self.get_last_msg(offset)[-1]["message"]["text"]
                 offset += 1
                 answer_struct["answer"] = answer
 
                 # get the existing answer list from database and add new answer in it
                 question_obj = similar_questions[int(response)]
+                print(question_obj)
                 old_answer_list = json.loads(question_obj.answer)
-                question_obj.answer = json.dumps(old_answer_list.append(answer_struct))
+                old_answer_list.append(answer_struct)
+                print(old_answer_list)
+                question_obj.answer = json.dumps(old_answer_list)
+                print(question_obj.answer)
+                question_obj.save()
 
                 # inform user after updating database
                 self.send_msg(
@@ -155,10 +180,16 @@ class XmemoBot:
         response = self.get_last_msg(offset)[-1]["message"]["text"]
         offset += 1
         if is_valid_date(response):
+
+            self.send_msg(
+                "Please give your answer now: ",
+                chat_id
+            )
+
             answer = self.get_last_msg(offset)[-1]["message"]["text"]
             offset += 1
             answer_struct["answer"] = answer
-            question_obj = Question(question=question, date=response, answer=answer_struct)
+            question_obj = Question(question=question, date=response, answer=json.dumps([answer_struct]))
             question_obj.save()
 
             self.send_msg(
@@ -166,13 +197,13 @@ class XmemoBot:
                 chat_id
             )
 
+            return
+        else:
+            self.send_msg(
+                "This is not a valid date, cancelling operation. Please try again!",
+                chat_id
+            )
+
     def handle_response(self, text, chat_id):
         if match(text, "add question"):
             self.add_question(chat_id)
-
-    def report_error(self, error_msg="Fixed Error"):
-        if self.reported_error:
-            self.send_msg(error_msg, self.private_token)
-        elif self.reported_error and self.fixed_error:
-            self.reported_error = False
-            self.send_msg(error_msg, self.private_token)
