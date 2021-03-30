@@ -25,7 +25,3 @@ def are_similar(str1, str2):
         if math.ceil(match_count * 100 / len(str2_list)) >= min_match_diff:
             return True
     return False
-
-
-print(are_similar("write a program to display the factorial of a number",
-                  "write a program that displays factorial of a given number"))
