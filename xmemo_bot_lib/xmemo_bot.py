@@ -1,4 +1,5 @@
 import os
+import time
 import json
 import django
 import requests
@@ -22,7 +23,10 @@ class XmemoBot:
     private_token = os.environ.get("private_token")
     base_url = f"https://api.telegram.org/bot{token}"
 
-    def get_msg_list(self):
+    def get_msg_list(self, recursion=False):
+        if recursion:
+            time.sleep(5)
+
         url = f"{self.base_url}/getUpdates"
         r = requests.get(url)
 
@@ -30,7 +34,7 @@ class XmemoBot:
         if r.status_code == 200:
             message_list = json.loads(r.content)["result"]
         else:
-            return self.get_msg_list()  # in case server didn't respond try again
+            return self.get_msg_list(recursion=True)  # in case server didn't respond try again
 
         # update-object length check
         if len(message_list) > 0:  # best case scenario
@@ -43,7 +47,7 @@ class XmemoBot:
             if len(new_list) > 0:
                 return new_list
             else:
-                return self.get_msg_list()
+                return self.get_msg_list(recursion=True)
 
     def get_last_msg(self, offset, timeout=100):
         url = f"{self.base_url}/getUpdates?timeout={timeout}&offset={offset+1}"
@@ -85,7 +89,8 @@ class XmemoBot:
             "publish_date": get_date(),
             "answer": "",
             "correct_val": 0,
-            "wrong_val": 0
+            "wrong_val": 0,
+            "unique_id": "c0"
         }
 
         offset += 1  # increment offset to receive further replies
@@ -139,12 +144,10 @@ class XmemoBot:
 
                 # get the existing answer list from database and add new answer in it
                 question_obj = similar_questions[int(response)]
-                print(question_obj)
                 old_answer_list = json.loads(question_obj.answer)
+                answer_struct["unique_id"] = f"c{len(old_answer_list)}"
                 old_answer_list.append(answer_struct)
-                print(old_answer_list)
                 question_obj.answer = json.dumps(old_answer_list)
-                print(question_obj.answer)
                 question_obj.save()
 
                 # inform user after updating database

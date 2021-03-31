@@ -125,12 +125,14 @@ class QuestionJson:
 
     def get_html(self):
         html = f"""\
-<div class="question">
-    <p>{self.heading}</p>
-    <div></div>
-</div>
-{self.child_html}
-<div class="major-line-break"></div>"""
+<span class="question_group">
+    <div class="question">
+        <p>{self.heading}</p>
+        <div></div>
+    </div>
+    {self.child_html}
+    <div class="major-line-break"></div>
+</span>"""
 
         return html
 
@@ -148,12 +150,16 @@ class AnswerJson:
 </p>
 <pre class="code-block"><code class="lang-python">{self.struct["answer"]}</code></pre>
 <p class="main-text">Is this answer correct?</p>
-<div class="validity-check">
-    <span class="right inline-btn">Correct</span>
-    <span class="wrong inline-btn">Incorrect</span>
+<div id="{self.struct["unique_id"]}" class="validity-check">
+    <span class="right inline-btn" onclick="update_correct_val(this)">Correct</span>
+    <span class="wrong inline-btn" onclick="update_incorrect_val(this)">Incorrect</span>
 </div>
-<p class="main-text" style="color: green;">{self.struct["correct_val"]} found this answer to be correct</p>
-<p class="main-text" style="color: red;">{self.struct["wrong_val"]} found this answer to be incorrect.</p>
+<p id="{self.struct["unique_id"]}correct_indicator" class="main-text" style="color: green;">
+    {self.struct["correct_val"]} found this answer to be correct.
+</p>
+<p id="{self.struct["unique_id"]}wrong_indicator" class="main-text" style="color: red;">
+    {self.struct["wrong_val"]} found this answer to be incorrect.
+</p>
 <div class="minor-line-break"></div>"""
         return html
 

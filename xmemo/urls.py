@@ -24,6 +24,7 @@ from mathematics.views import math_view
 from english.views import eng_view
 
 urlpatterns = [
+    path("update-review/", update_question_review, name="update-review"),
     path("search-keyword/", display_by_key, name="search-keyword"),
     path('search/', display_by_date, name="search-date"),
     path('', home_view, name="home"),
