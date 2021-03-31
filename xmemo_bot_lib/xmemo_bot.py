@@ -78,7 +78,7 @@ class XmemoBot:
         offset = self.get_msg_list()[-1]["update_id"]  # get the last offset value
         response: dict = self.get_last_msg(offset)[-1]["message"]  # get reply for the question
         question = response["text"]  # the reply
-        author = f'{response["chat"]["first_name"]} {response["chat"]["last_name"]}'
+        author = f'{response["from"]["first_name"]} {response["from"]["last_name"]}'
 
         answer_struct = {
             "author": author,
@@ -111,7 +111,7 @@ class XmemoBot:
             if not exact_match:
                 self.send_msg(
                     "Check if any of these are the same as your question and are just written differently? "
-                    "If yes just type the number written before the number, or just say no.",
+                    "If yes just type the number written before the question, or just say no.",
                     chat_id
                 )
 
@@ -177,7 +177,8 @@ class XmemoBot:
             chat_id
         )
 
-        response = self.get_last_msg(offset)[-1]["message"]["text"]
+        # QUERY TO GET RESPONSE CONTAINING DATE
+        response = self.get_last_msg(offset)[-1]["message"]["text"].lower()
         offset += 1
         if is_valid_date(response):
 
@@ -186,6 +187,7 @@ class XmemoBot:
                 chat_id
             )
 
+            # QUERY TO GET RESPONSE CONTAINING ANSWER
             answer = self.get_last_msg(offset)[-1]["message"]["text"]
             offset += 1
             answer_struct["answer"] = answer

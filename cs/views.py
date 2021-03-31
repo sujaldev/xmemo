@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 from cs import db_reader
 
 
@@ -15,7 +14,8 @@ def display_by_date(request):
         return render(request, "questions_base.html", html)
     else:
         html = {
-            "html_string": f'<p class="main-text"> {query} is not a valid date, try again </p>'
+            "html_string": f'<p class="main-text"> <bold>{query}</bold> is not a valid date, (only 2020 and 2021 '
+                           f'are accepted years) try again. </p>'
         }
         return render(request, "questions_base.html", html)
 

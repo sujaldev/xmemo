@@ -1,8 +1,9 @@
 import os
-import django
 import json
+import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'xmemo.settings')
 django.setup()
+from random import randrange
 from cs.models import Question
 from xmemo_bot_lib.match_funcs import *
 
@@ -158,24 +159,27 @@ class AnswerJson:
 
 
 def get_html_by_date(given_date):
+    date = given_date.lower()
     html = ""
-    question_list = Question.objects.filter(date=given_date)
+    question_list = Question.objects.filter(date=date)
     if len(question_list) > 0:
-        for each_question in Question.objects.filter(date=given_date):
+        for each_question in Question.objects.filter(date=date):
             html += QuestionJson(each_question).get_html()
     else:
-        return f'<p class="main-text"> {given_date} no record for given date exists. Please try again. </p>'
+        return f'<p class="main-text"><bold>{date}</bold> no record for given date exists. Please try again. </p>'
 
     return html
 
 
 def get_html_by_key(given_keywords):
+    keywords = given_keywords.lower()
     html = ""
-    similar_questions = [model for model in Question.objects.all() if are_similar(given_keywords, model.question)]
+    similar_questions = [model for model in Question.objects.all() if are_similar(keywords, model.question)]
     if len(similar_questions) > 0:
         for each_question in similar_questions:
             html += QuestionJson(each_question).get_html()
         return html
     else:
         return f'\
-<p class="main-text"> "{given_keywords}" could not find any questions similar to this. Please try again. </p>'
+<p class="main-text"><bold>"{given_keywords}"</bold> ' \
+               'could not find any questions similar to this. Please try again.</p>'
