@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	{% load static %}
 	<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
-	<link class="mode" rel="stylesheet" type="text/css" href="{% static 'css/light-theme.css' %}">
+	<link id="theme_css" rel="stylesheet" type="text/css" href="{% static 'css/' %}{{ theme }}-theme.css">
 	<style type="text/css">
 		@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,500;0,600;1,700&display=swap');
 		@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap');
@@ -657,6 +657,18 @@
 		</div></header>
 
 	<main class="main-container" style="min-height: 0px;">
+		<div class="heading">
+		    <p>XMEMO <span id="theme-changer" class="inline-btn" onclick="switch_theme()">Change Theme</span></p>
+		    <div></div>
+		</div>
+		<p class="main-text">
+		    <bold style="color: red;">The website is functional and the bot is ready now, just performing some
+		    checks, you might experience some bugs (stable release coming this week) but rest is fine.</bold><br><br>
+		    Xmemo ~ Xaverian Memo (read as zemo) is a notes and resource sharing service.<br><br>
+		    <a href="https://t.me/joinchat/uQvgX7OBFi1jNDg1">Join</a> our telegram group and just say "add question" to upload
+		    notes<br><br>
+		    You can search for notes by date or by keywords.
+		</p>
 		{% block content %}
 		replace me
 		{% endblock content %}
@@ -670,7 +682,9 @@
 					<path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
 					</path></svg>
 			</a></p>
-		</div></footer>
+		</div>
+	</footer>
+	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
 	<script type="text/javascript">
 		ham = document.getElementsByClassName('ham-menu')[0]
 		open_btn = document.getElementsByClassName('logo')[0]
@@ -678,18 +692,36 @@
 		change_theme_btn = document.getElementById('theme-changer')
 		mode = document.getElementsByClassName('mode')[0]
 
+		function switch_theme(element){
+			current_theme = $("#theme_css").attr("href")
 
-		change_theme_btn.onclick = function(){
-			if (mode.getAttribute('href') == "/static/css/light-theme.css"){
-				mode.setAttribute('href', "/static/css/dark-theme.css")
-				document.getElementsByClassName("githublogo")[0].setAttribute("fill", "white")
-				document.getElementsByClassName("githublogo")[1].setAttribute("fill", "white")
-			} else {
-				mode.setAttribute('href', "/static/css/light-theme.css")
-				document.getElementsByClassName("githublogo")[0].setAttribute("fill", "black")
-				document.getElementsByClassName("githublogo")[1].setAttribute("fill", "black")
+			if (current_theme == "/static/css/dark-theme.css"){
+				theme_to_set = "/static/css/light-theme.css"
+			} else if (current_theme == "/static/css/light-theme.css"){
+				theme_to_set = "/static/css/dark-theme.css"
 			}
+
+
+		    $.post('switch-theme/', {
+		        csrfmiddlewaretoken: "{{ csrf_token }}",
+		        theme: theme_to_set
+		    }, function(response){
+		        // location.reload();
+		        $('#theme_css').attr("href", theme_to_set)
+		    });
+
 		}
+		// change_theme_btn.onclick = function(){
+		// 	if (mode.getAttribute('href') == "/static/css/light-theme.css"){
+		// 		mode.setAttribute('href', "/static/css/dark-theme.css")
+		// 		document.getElementsByClassName("githublogo")[0].setAttribute("fill", "white")
+		// 		document.getElementsByClassName("githublogo")[1].setAttribute("fill", "white")
+		// 	} else {
+		// 		mode.setAttribute('href', "/static/css/light-theme.css")
+		// 		document.getElementsByClassName("githublogo")[0].setAttribute("fill", "black")
+		// 		document.getElementsByClassName("githublogo")[1].setAttribute("fill", "black")
+		// 	}
+		// }
 
 		open_btn.onclick = function(){
 			ham.setAttribute('class', 'ham-menu ham-active')

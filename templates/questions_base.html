@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
     {% load static %}
 	<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
-	<link class="mode" rel="stylesheet" type="text/css" href="{% static 'css/light-theme.css' %}">
+	<link id="theme_css" rel="stylesheet" type="text/css" href="{% static 'css/' %}{{ theme }}-theme.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* PrismJS 1.23.0
@@ -535,7 +535,6 @@
 	        margin-bottom: 30px;
 	    }
     </style>
-	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
 </head>
 <body>
 	<header>
@@ -779,7 +778,7 @@
 
 	<main class="main-container" style="min-height: 0px;">
         <div class="heading">
-            <p id="test">XMEMO <span id="theme-changer" class="inline-btn">Change Theme</span></p>
+            <p id="test">XMEMO <span id="theme-changer" class="inline-btn" onclick="switch_theme()">Change Theme</span></p>
             <div></div>
         </div>
 		{{ html_string | safe }}
@@ -795,11 +794,34 @@
 			</a></p>
 		</div>
 	</footer>
+
+	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+
 	<script type="text/javascript">
+
+		function switch_theme(element){
+			current_theme = $("#theme_css").attr("href")
+
+			if (current_theme == "/static/css/dark-theme.css"){
+				theme_to_set = "/static/css/light-theme.css";
+			} else if (current_theme == "/static/css/light-theme.css"){
+				theme_to_set = "/static/css/dark-theme.css";
+			}
+
+
+		    $.post('/switch-theme/', {
+		        csrfmiddlewaretoken: "{{ csrf_token }}",
+		        theme: theme_to_set
+		    }, function(response){
+		        // location.reload();
+		        $('#theme_css').attr("href", theme_to_set);
+			});
+		}
+
 		function update_correct_val(element) {
-			parent_id = $(element).parent().attr("id")
-			unique_id_num = parent_id.slice(parent_id.length-1, parent_id.length)
-			question_text = $(element).parent().siblings('.question').children('p').html()
+			parent_id = $(element).parent().attr("id");
+			unique_id_num = parent_id.slice(parent_id.length-1, parent_id.length);
+			question_text = $(element).parent().siblings('.question').children('p').html();
 
 			$.post('/update-review/', {
 				csrfmiddlewaretoken: "{{ csrf_token }}",
@@ -807,17 +829,17 @@
 				unique_id: unique_id_num,
 				val_type: "correct_val"
 			}, function(response){
-				indicator_elem = $(`#${parent_id}correct_indicator`)
-				current_indicator = parseInt(indicator_elem.html(), 10)
-				current_indicator += 1
-				indicator_elem.html(`${current_indicator} found this answer to be incorrect.`)
+				indicator_elem = $(`#${parent_id}correct_indicator`);
+				current_indicator = parseInt(indicator_elem.html(), 10);
+				current_indicator += 1;
+				indicator_elem.html(`${current_indicator} found this answer to be incorrect.`);
 			});
 		}
 
 		function update_incorrect_val(element) {
-			parent_id = $(element).parent().attr("id")
-			unique_id_num = parent_id.slice(parent_id.length-1, parent_id.length)
-			question_text = $(element).parent().siblings('.question').children('p').html()
+			parent_id = $(element).parent().attr("id");
+			unique_id_num = parent_id.slice(parent_id.length-1, parent_id.length);
+			question_text = $(element).parent().siblings('.question').children('p').html();
 
 			$.post('/update-review/', {
 				csrfmiddlewaretoken: "{{ csrf_token }}",
@@ -825,41 +847,26 @@
 				unique_id: unique_id_num,
 				val_type: "wrong_val"
 			}, function(response){
-				indicator_elem = $(`#${parent_id}wrong_indicator`)
-				current_indicator = parseInt(indicator_elem.html(), 10)
-				current_indicator += 1
-				indicator_elem.html(`${current_indicator} found this answer to be incorrect.`)
+				indicator_elem = $(`#${parent_id}wrong_indicator`);
+				current_indicator = parseInt(indicator_elem.html(), 10);
+				current_indicator += 1;
+				indicator_elem.html(`${current_indicator} found this answer to be incorrect.`);
 
 			});
-		}
+		};
 	</script>
 	<script type="text/javascript">
-		ham = document.getElementsByClassName('ham-menu')[0]
-		open_btn = document.getElementsByClassName('logo')[0]
-		close_btn = document.getElementsByClassName('sub close-ham')[0]
-		change_theme_btn = document.getElementById('theme-changer')
-		mode = document.getElementsByClassName('mode')[0]
-
-
-		change_theme_btn.onclick = function(){
-			if (mode.getAttribute('href') == "/static/css/light-theme.css"){
-				mode.setAttribute('href', "/static/css/dark-theme.css")
-				document.getElementsByClassName("githublogo")[0].setAttribute("fill", "white")
-				document.getElementsByClassName("githublogo")[1].setAttribute("fill", "white")
-			} else {
-				mode.setAttribute('href', "/static/css/light-theme.css")
-				document.getElementsByClassName("githublogo")[0].setAttribute("fill", "black")
-				document.getElementsByClassName("githublogo")[1].setAttribute("fill", "black")
-			}
-		}
+		ham = document.getElementsByClassName('ham-menu')[0];
+		open_btn = document.getElementsByClassName('logo')[0];
+		close_btn = document.getElementsByClassName('sub close-ham')[0];
 
 		open_btn.onclick = function(){
-			ham.setAttribute('class', 'ham-menu ham-active')
-		}
+			ham.setAttribute('class', 'ham-menu ham-active');
+		};
 
 		close_btn.onclick = function(){
-			ham.setAttribute('class', 'ham-menu')
-		}
+			ham.setAttribute('class', 'ham-menu');
+		};
 	</script>
     <script type="text/javascript">
 	        /* PrismJS 1.23.0

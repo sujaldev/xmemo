@@ -3,17 +3,36 @@ from django.http import HttpResponse
 from cs import db_reader
 from cs.models import Question
 import json
+from xmemo import settings
 
 
 # Create your views here.
+def set_cookie(response, key, value):
+    response.set_cookie(key, value)
+
+
+def get_cookie(request, key):
+    value = request.COOKIES.get(key)
+    return value
+
+
 def home_view(request):
-    return render(request, "index.html", {})
+    theme = get_cookie(request, "theme")
+    if theme is None:
+        theme = "light"
+    return render(request, "index.html", {"theme": theme})
 
 
 def display_by_date(request):
+    theme = get_cookie(request, "theme")
+    if theme is None:
+        theme = "light"
     query = request.GET.get('q', '')
     if is_valid_date(query):
-        html = {"html_string": db_reader.get_html_by_date(query)}
+        html = {
+            "html_string": db_reader.get_html_by_date(query),
+            "theme": theme
+        }
         return render(request, "questions_base.html", html)
     else:
         html = {
@@ -24,9 +43,13 @@ def display_by_date(request):
 
 
 def display_by_key(request):
+    theme = get_cookie(request, "theme")
+    if theme is None:
+        theme = "light"
     query = request.GET.get('q', '')
     html = {
-        "html_string": db_reader.get_html_by_key(query)
+        "html_string": db_reader.get_html_by_key(query),
+        "theme": theme
     }
     return render(request, "questions_base.html", html)
 
@@ -49,6 +72,16 @@ def update_question_review(request):
     q_obj.save()
 
     return HttpResponse(status=200)
+
+
+def switch_theme(request):
+    # get post request's parameters
+    mode = request.POST.get("theme", '').split("/")[-1].replace(".css", "")
+    mode = mode.split("-")[0]
+    # set cookie and return response
+    response = HttpResponse(f"Setting Theme Cookie to {mode}")
+    set_cookie(response, "theme", mode)
+    return response
 
 
 def is_valid_date(date):
