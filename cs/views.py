@@ -36,8 +36,10 @@ def display_by_date(request):
         return render(request, "questions_base.html", html)
     else:
         html = {
-            "html_string": f'<p class="main-text"> <bold>{query}</bold> is not a valid date, (only 2020 and 2021 '
-                           f'are accepted years) try again. </p>'
+            "html_string": f'<p class="main-text" style="margin-bottom: 85vh;"> '
+                           '<bold>{query}</bold> is not a valid date, (only 2020 and 2021 are accepted years) '
+                           'try again. </p>',
+            "theme": theme
         }
         return render(request, "questions_base.html", html)
 

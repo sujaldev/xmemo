@@ -17,6 +17,10 @@
 			transition: 0.5s ease-out;
 		}
 
+		.githublogo{
+			fill: var(--github-color);
+		}
+
 
 		*{
 			margin: 0;
@@ -26,6 +30,9 @@
 			-webkit-tap-highlight-color: transparent;
 		}
 
+		a{
+			color: var(--link-color);
+		}
 
 
 		/* MAIN CODE BEGINS HERE*/
@@ -657,18 +664,20 @@
 		</div></header>
 
 	<main class="main-container" style="min-height: 0px;">
+
+		{% block intro_block %}
 		<div class="heading">
 		    <p>XMEMO <span id="theme-changer" class="inline-btn" onclick="switch_theme()">Change Theme</span></p>
 		    <div></div>
 		</div>
 		<p class="main-text">
-		    <bold style="color: red;">The website is functional and the bot is ready now, just performing some
-		    checks, you might experience some bugs (stable release coming this week) but rest is fine.</bold><br><br>
+		    <bold style="color: red;">The bot and website are functional and stable now. Working on adding more features.
+		    If you experience any bugs, please contact me and the bug will be fixed asap. </bold><br><br>
 		    Xmemo ~ Xaverian Memo (read as zemo) is a notes and resource sharing service.<br><br>
-		    <a href="https://t.me/joinchat/uQvgX7OBFi1jNDg1">Join</a> our telegram group and just say "add question" to upload
-		    notes<br><br>
-		    You can search for notes by date or by keywords.
+		    <a href="/instructions/">Click</a> this link to see instructions on how to use this webstite.
 		</p>
+		{% endblock %}
+
 		{% block content %}
 		replace me
 		{% endblock content %}
@@ -686,19 +695,17 @@
 	</footer>
 	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
 	<script type="text/javascript">
-		ham = document.getElementsByClassName('ham-menu')[0]
-		open_btn = document.getElementsByClassName('logo')[0]
-		close_btn = document.getElementsByClassName('sub close-ham')[0]
-		change_theme_btn = document.getElementById('theme-changer')
-		mode = document.getElementsByClassName('mode')[0]
+		ham = document.getElementsByClassName('ham-menu')[0];
+		open_btn = document.getElementsByClassName('logo')[0];
+		close_btn = document.getElementsByClassName('sub close-ham')[0];
 
 		function switch_theme(element){
 			current_theme = $("#theme_css").attr("href")
 
 			if (current_theme == "/static/css/dark-theme.css"){
-				theme_to_set = "/static/css/light-theme.css"
+				theme_to_set = "/static/css/light-theme.css";
 			} else if (current_theme == "/static/css/light-theme.css"){
-				theme_to_set = "/static/css/dark-theme.css"
+				theme_to_set = "/static/css/dark-theme.css";
 			}
 
 
@@ -711,17 +718,6 @@
 		    });
 
 		}
-		// change_theme_btn.onclick = function(){
-		// 	if (mode.getAttribute('href') == "/static/css/light-theme.css"){
-		// 		mode.setAttribute('href', "/static/css/dark-theme.css")
-		// 		document.getElementsByClassName("githublogo")[0].setAttribute("fill", "white")
-		// 		document.getElementsByClassName("githublogo")[1].setAttribute("fill", "white")
-		// 	} else {
-		// 		mode.setAttribute('href', "/static/css/light-theme.css")
-		// 		document.getElementsByClassName("githublogo")[0].setAttribute("fill", "black")
-		// 		document.getElementsByClassName("githublogo")[1].setAttribute("fill", "black")
-		// 	}
-		// }
 
 		open_btn.onclick = function(){
 			ham.setAttribute('class', 'ham-menu ham-active')

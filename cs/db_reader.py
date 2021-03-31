@@ -71,7 +71,8 @@ def get_html_by_date(given_date):
         for each_question in Question.objects.filter(date=date):
             html += QuestionJson(each_question).get_html()
     else:
-        return f'<p class="main-text"><bold>{date}</bold> no record for given date exists. Please try again. </p>'
+        return f'<p class="main-text" style="margin-bottom: 85vh;"><bold>{date}</bold>' \
+               ' no record for given date exists.Please try again. </p>'
 
     return html
 
@@ -86,5 +87,5 @@ def get_html_by_key(given_keywords):
         return html
     else:
         return f'\
-<p class="main-text"><bold>"{given_keywords}"</bold> ' \
+<p class="main-text" style="margin-bottom: 85vh;"><bold>"{given_keywords}"</bold> ' \
                'could not find any questions similar to this. Please try again.</p>'

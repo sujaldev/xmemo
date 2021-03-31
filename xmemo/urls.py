@@ -22,8 +22,10 @@ from physics.views import phy_view
 from chemistry.views import chem_view
 from mathematics.views import math_view
 from english.views import eng_view
+from instructions.views import instructions_view
 
 urlpatterns = [
+    path("instructions/", instructions_view, name="instructions"),
     path("switch-theme/", switch_theme, name="switch_theme"),
     path("update-review/", update_question_review, name="update-review"),
     path("search-keyword/", display_by_key, name="search-keyword"),

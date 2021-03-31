@@ -27,4 +27,7 @@
 	--major-line-break: black;
 	--minor-line-break: var(--main-border);
 	--wrong-button-hover: #d73a49;
+
+	--link-color: #6CEBB6;
+	--github-color: black;
 }
